@@ -105,21 +105,63 @@ sudo pm2 save
 - 인스턴스 상세 정보의 **외부 IP(External IP)** 주소를 확인합니다.
 - 웹 브라우저 주소창에 `http://<VM_외부_IP>`를 입력하면 전 세계 어디서든 Gemini 3.8/3.7 Flash 기반 정신건강 상담 챗봇을 이용하실 수 있습니다.
 
+
+---
+
+## 🤖 멀티 에이전트 시스템 (.agents)
+
+본 프로젝트는 전문화된 세 AI 에이전트(**기획자**, **코더**, **검수자**)가 유기적으로 협업하는 **멀티 에이전트 개발 환경**을 갖추고 있습니다.
+
+```mermaid
+flowchart LR
+    User([사용자 요구사항]) --> Planner[📋 기획자]
+    Planner -->|기획서 및 기능 명세| Coder[💻 코더]
+    Coder -->|구현 코드 및 변경점| Reviewer[🔍 검수자]
+    Reviewer -->|수정 요청| Coder
+    Reviewer -->|최종 승인 Pass| Deploy([배포 및 완료])
+```
+
+### 1. 역할 정의
+- 📋 **기획자 (`agent-planner`)**: 요구사항 분석, 시스템 아키텍처 및 인터페이스 설계, WBS 도출
+- 💻 **코더 (`agent-coder`)**: 기획 사양서 기반 소스 코드 구현, 모듈화, 클린 코드 및 방어적 예외 처리
+- 🔍 **검수자 (`agent-reviewer`)**: 코드 리뷰, 보안 감사, 요구사항 충족도 점검, 최종 PASS/FAIL 판정
+
+### 2. 사용 방법
+
+#### 방법 A. Antigravity IDE 대화창에서 역할 호출
+- `"@기획자 관점에서 상담 예약 기능에 대한 아키텍처와 기획서를 작성해줘."`
+- `"@코더 관점에서 위 기획서를 바탕으로 소스 코드를 구현해줘."`
+- `"@검수자 관점에서 작성된 코드의 보안 및 에러 처리를 철저히 리뷰해줘."`
+
+#### 방법 B. 자동화 파이프라인 CLI 실행
+터미널에서 명령어 한 줄로 3단계 에이전트 협업 체인을 자동 실행할 수 있습니다:
+```bash
+npm run agents "추가하고 싶은 기능 설명"
+# 또는
+node .agents/pipeline/multi_agent_runner.js "추가하고 싶은 기능 설명"
+```
+실행이 완료되면 `.agents/pipeline/latest_multi_agent_report.md` 파일에 기획서, 구현 코드, 검수자 판정 리포트가 자동으로 기록됩니다.
+
 ---
 
 ## 📁 프로젝트 구조
 
 ```
 gcp-compute-engine-chatbot/
-├── package.json          # 프로젝트 의존성 및 스크립트 정의
-├── server.js             # Express 서버 (Gemini API SSE 스트리밍 & 보안 처리)
-├── README.md             # 프로젝트 소개 및 배포 가이드
+├── .agents/                      # 멀티 에이전트 워크스페이스 루트
+│   ├── AGENTS.md                 # 멀티 에이전트 총괄 규칙 및 워크플로우
+│   ├── rules/                    # 에이전트별 행동 규칙 (기획자, 코더, 검수자)
+│   ├── skills/                   # 에이전트별 전문 스킬 (SKILL.md)
+│   └── pipeline/                 # 자동 협동 파이프라인 러너 (multi_agent_runner.js)
+├── package.json                  # 프로젝트 의존성 및 스크립트 정의
+├── server.js                     # Express 서버 (Gemini API SSE 스트리밍 & 보안 처리)
+├── README.md                     # 프로젝트 소개 및 배포 가이드
 └── public/
-    ├── index.html        # Gemini 모티브 웹 UI 구조
+    ├── index.html                # Gemini 모티브 웹 UI 구조
     ├── css/
-    │   └── style.css     # 오로라 그라데이션, 다크모드, 플로팅 입력바 스타일
+    │   └── style.css             # 오로라 그라데이션, 다크모드, 플로팅 입력바 스타일
     └── js/
-        └── app.js        # 모델 전환, 스트리밍 수신, STT/TTS, 마크다운 렌더링
+        └── app.js                # 모델 전환, 스트리밍 수신, STT/TTS, 마크다운 렌더링
 ```
 
 ---

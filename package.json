@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js"
+    "dev": "node --watch server.js",
+    "agents": "node .agents/pipeline/multi_agent_runner.js"
   },
   "keywords": [
     "gemini",
