@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>마음 쉼터 · Gemini 3.8 Flash 정신건강 상담 AI</title>
+  <meta name="description" content="Gemini 3.8 Flash 및 3.7 Flash 기반의 따뜻하고 섬세한 정신건강 심리 상담 AI 챗봇입니다.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="theme-light">
+  <!-- 전체 앱 레이아웃 -->
+  <div class="app-container">
+    
+    <!-- 사이드바 -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <button class="btn-icon" id="sidebarCollapseBtn" aria-label="사이드바 접기">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+        <span class="sidebar-title">마음 쉼터 대화</span>
+      </div>
+
+      <div class="sidebar-action">
+        <button class="btn-new-chat" id="newChatBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>새 상담 시작</span>
+        </button>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">추천 마음 테마</div>
+        <div class="theme-chips-list">
+          <button class="theme-pill-btn" data-prompt="요즘 마음에 불안과 긴장이 가득 차서 진정이 잘 안 돼요.">
+            🌿 불안 및 긴장 완화
+          </button>
+          <button class="theme-pill-btn" data-prompt="생각이 너무 많아서 밤에 쉽게 잠들지 못해요. 마음을 가라앉히고 싶어요.">
+            🌙 수면 및 불면 케어
+          </button>
+          <button class="theme-pill-btn" data-prompt="인간관계에서 받은 상처 때문에 자존감이 자꾸 떨어져요.">
+            🤝 자존감 및 관계 회복
+          </button>
+          <button class="theme-pill-btn" data-prompt="오늘 너무 많은 에너지를 소진해서 번아웃이 온 것 같아요.">
+            🔋 번아웃 및 감정 소진
+          </button>
+          <button class="theme-pill-btn" data-prompt="지금 당장 실천할 수 있는 4-7-8 호흡법이나 감각 그라운딩 기법을 차근차근 알려줘.">
+            🧘 5분 마음챙김 가이드
+          </button>
+        </div>
+      </div>
+
+      <!-- 사이드바 하단 위기지원 및 안내 -->
+      <div class="sidebar-footer">
+        <div class="emergency-card" id="emergencyCard">
+          <div class="emergency-header">
+            <span class="emergency-badge">24시간 위기지원</span>
+          </div>
+          <p class="emergency-desc">위급하거나 극심한 고통이 있을 땐 즉시 전문 상담을 받으실 수 있습니다.</p>
+          <div class="emergency-links">
+            <a href="tel:109" class="emergency-tel-btn">
+              <span>자살예방상담</span>
+              <strong>109</strong>
+            </a>
+            <a href="tel:1577-0199" class="emergency-tel-btn">
+              <span>정신건강상담</span>
+              <strong>1577-0199</strong>
+            </a>
+          </div>
+        </div>
+        <div class="disclaimer-text">
+          본 서비스는 AI 심리 상담 보조도구이며 의학적 진단 및 약물 처방을 대신하지 않습니다.
+        </div>
+      </div>
+    </aside>
+
+    <!-- 메인 컨텐츠 영역 -->
+    <main class="main-content">
+      <!-- 상단 네비게이션 바 -->
+      <header class="top-nav">
+        <div class="nav-left">
+          <button class="btn-icon" id="sidebarToggleBtn" aria-label="메뉴 토글">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div class="brand">
+            <span class="gemini-star">✦</span>
+            <span class="brand-title">Gemini 마음 쉼터</span>
+          </div>
+        </div>
+
+        <div class="nav-center">
+          <!-- 상단 모델 표시 배지 -->
+          <div class="model-badge-top" id="topModelBadge">
+            <span class="badge-dot"></span>
+            <span id="activeModelLabel">Gemini 3.8 Flash</span>
+          </div>
+        </div>
+
+        <div class="nav-right">
+          <!-- 긴급 지원 버튼 -->
+          <button class="btn-subtle btn-crisis" id="crisisModalBtn" title="24시간 위기상담 안내">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <span class="btn-text-hide">위기 지원 (109)</span>
+          </button>
+
+          <!-- 테마 전환 버튼 (라이트/다크) -->
+          <button class="btn-icon" id="themeToggleBtn" aria-label="테마 전환" title="라이트/다크 모드">
+            <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+
+          <!-- 대화 초기화 버튼 -->
+          <button class="btn-icon" id="clearChatBtn" aria-label="대화 비우기" title="대화 내용 지우기">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- 메시지 스크롤 뷰 -->
+      <div class="chat-viewport" id="chatViewport">
+        <!-- 초기 랜딩 화면 (Gemini 참조 화면) -->
+        <div class="welcome-container" id="welcomeContainer">
+          <div class="gemini-aurora-glow"></div>
+          <h1 class="welcome-title">
+            소중한 당신, <span class="gradient-text">무엇을 털어놓고</span> 싶으신가요?
+          </h1>
+          <p class="welcome-subtitle">
+            마음 쉼터는 Gemini 3.8 Flash 기반으로 당신의 감정을 온전히 경청하고 지지하는 안식처입니다.
+          </p>
+
+          <!-- 추천 카드 그리드 -->
+          <div class="suggestion-grid">
+            <button class="suggestion-card" data-prompt="요즘 마음이 너무 지치고 불안해요. 편안하게 마음을 털어놓고 싶어요.">
+              <div class="card-icon">🌿</div>
+              <div class="card-content">
+                <div class="card-title">지친 마음 환기하기</div>
+                <div class="card-desc">불안과 답답함을 내려놓고 편안하게 대화해요</div>
+              </div>
+            </button>
+
+            <button class="suggestion-card" data-prompt="생각이 너무 많아서 밤에 잠을 못 자겠어요. 수면을 돕는 이완법을 알려줘.">
+              <div class="card-icon">🌙</div>
+              <div class="card-content">
+                <div class="card-title">수면 & 생각 멈추기</div>
+                <div class="card-desc">꼬리를 무는 걱정을 비우고 숙면으로 이끄는 호흡</div>
+              </div>
+            </button>
+
+            <button class="suggestion-card" data-prompt="주변 사람들의 한마디에 너무 상처받고 자책하게 돼요. 어떻게 마음을 다스릴까요?">
+              <div class="card-icon">🤝</div>
+              <div class="card-content">
+                <div class="card-title">관계 스트레스 & 자존감</div>
+                <div class="card-desc">타인의 시선에서 벗어나 내 감정을 지키는 법</div>
+              </div>
+            </button>
+
+            <button class="suggestion-card" data-prompt="가슴이 답답하고 호흡이 가빠질 때 바로 쓸 수 있는 그라운딩 기법을 함께 해줘.">
+              <div class="card-icon">🧘</div>
+              <div class="card-content">
+                <div class="card-title">5분 감각 그라운딩 실습</div>
+                <div class="card-desc">현재 순간으로 돌아오는 5-4-3-2-1 안정화 기법</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- 메시지 리스트 영역 -->
+        <div class="message-list" id="messageList" style="display: none;"></div>
+      </div>
+
+      <!-- 하단 플로팅 인풋바 영역 (Gemini 디자인 참조) -->
+      <div class="input-area-container">
+        <div class="input-pill-wrapper">
+          <!-- 왼쪽 액션 버튼 (+) -->
+          <button class="pill-btn pill-btn-plus" id="actionPlusBtn" title="상담 도구 & 퀵메뉴" aria-label="추가 기능">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+
+          <!-- 텍스트 입력창 -->
+          <textarea
+            id="chatInput"
+            class="chat-textarea"
+            rows="1"
+            placeholder="Gemini에게 마음 털어놓기..."
+            aria-label="상담 메시지 입력"
+          ></textarea>
+
+          <!-- 오른쪽 컨트롤: 모델 선택 드롭다운 & 마이크 & 전송 -->
+          <div class="pill-controls">
+            <!-- 모델 셀렉터 드롭다운 토글 버튼 -->
+            <div class="model-dropdown-container">
+              <button class="model-selector-pill" id="modelSelectBtn" type="button" aria-haspopup="true" aria-expanded="false">
+                <span class="model-name" id="currentModelBadgeText">3.8 Flash</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+
+              <!-- 모델 선택 메뉴 레이어 -->
+              <div class="model-menu-popup" id="modelMenuPopup">
+                <div class="model-menu-header">AI 모델 선택</div>
+                <button class="model-option active" data-model="gemini-3.8-flash">
+                  <div class="option-info">
+                    <div class="option-title">
+                      Gemini 3.8 Flash
+                      <span class="tag-default">기본</span>
+                    </div>
+                    <div class="option-desc">섬세한 감정 공감 및 심리적 지지에 특화된 최신 플래시</div>
+                  </div>
+                  <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </button>
+
+                <button class="model-option" data-model="gemini-3.7-flash">
+                  <div class="option-info">
+                    <div class="option-title">
+                      Gemini 3.7 Flash
+                    </div>
+                    <div class="option-desc">균형 잡힌 대화와 차분한 심신 안정 솔루션 모델</div>
+                  </div>
+                  <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- 음성 입력(STT) 마이크 버튼 -->
+            <button class="pill-btn pill-btn-mic" id="micBtn" title="음성으로 말하기" aria-label="음성 인식">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="23"></line>
+                <line x1="8" y1="23" x2="16" y2="23"></line>
+              </svg>
+            </button>
+
+            <!-- 전송 버튼 -->
+            <button class="pill-btn pill-btn-send" id="sendBtn" title="전송" aria-label="메시지 전송" disabled>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="19" x2="12" y2="5"></line>
+                <polyline points="5 12 12 5 19 12"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- 하단 법적 고지 및 모델 정보 -->
+        <div class="input-bottom-notice">
+          Gemini는 실수를 할 수 있습니다. 긴급한 위기 상황에서는 <strong>109</strong> (자살예방) 또는 <strong>1577-0199</strong> (정신건강)로 전화해주세요.
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 위기 지원 모달 -->
+  <div class="modal-backdrop" id="crisisModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>🚨 24시간 정신건강 위기상담 안내</h3>
+        <button class="btn-icon" id="closeCrisisModalBtn" aria-label="닫기">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-lead">혼자 견디기 힘든 순간이 찾아왔다면, 주저하지 말고 아래의 전문 상담 기관에 손을 내밀어주세요. 24시간 언제나 당신의 이야기를 귀 기울여 들어드립니다.</p>
+        
+        <div class="crisis-cards-list">
+          <div class="crisis-card">
+            <div class="crisis-name">자살예방 상담전화</div>
+            <div class="crisis-tel">109</div>
+            <div class="crisis-detail">24시간 연중무휴 · 무료 전화 상담</div>
+          </div>
+          <div class="crisis-card">
+            <div class="crisis-name">정신건강 위기상담전화</div>
+            <div class="crisis-tel">1577-0199</div>
+            <div class="crisis-detail">24시간 정신건강 전문요원 1:1 상담</div>
+          </div>
+          <div class="crisis-card">
+            <div class="crisis-name">청소년 상담전화</div>
+            <div class="crisis-tel">1388</div>
+            <div class="crisis-detail">만 9세~24세 청소년 및 보호자 상담 (문자/전화)</div>
+          </div>
+          <div class="crisis-card">
+            <div class="crisis-name">응급 및 구조 신고</div>
+            <div class="crisis-tel">112 / 119</div>
+            <div class="crisis-detail">위급한 사고 및 즉각적인 신체적 구조가 필요한 경우</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary" id="confirmCrisisModalBtn">확인했습니다</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 퀵 액션 모달 (+) -->
+  <div class="modal-backdrop" id="quickActionModal">
+    <div class="modal-box modal-small">
+      <div class="modal-header">
+        <h3>🌿 빠른 마음 케어 도구</h3>
+        <button class="btn-icon" id="closeQuickActionBtn" aria-label="닫기">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="quick-action-list">
+        <button class="quick-action-item" data-prompt="지금 4-7-8 호흡법으로 제 마음을 차분하게 진정시켜주세요.">
+          <span class="action-emoji">🫁</span>
+          <div>
+            <strong>4-7-8 심호흡 시작</strong>
+            <span>몸의 긴장을 이완시키는 복식 호흡 세션</span>
+          </div>
+        </button>
+        <button class="quick-action-item" data-prompt="오늘 하루 있었던 일에 대한 감정 일기를 작성하고 정리하는 것을 도와줘.">
+          <span class="action-emoji">✍️</span>
+          <div>
+            <strong>감정 일기 쓰기</strong>
+            <span>오늘 느낀 핵심 감정과 생각 정리하기</span>
+          </div>
+        </button>
+        <button class="quick-action-item" data-prompt="자존감을 북돋워주는 따뜻하고 힘이 되는 긍정 확언(Affirmation)을 들려줘.">
+          <span class="action-emoji">✨</span>
+          <div>
+            <strong>나를 위한 긍정 확언</strong>
+            <span>자존감을 지키는 위로와 응원의 한마디</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

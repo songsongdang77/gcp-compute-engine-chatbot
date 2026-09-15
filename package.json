@@ -1,0 +1,24 @@
+{
+  "name": "gcp-compute-engine-chatbot",
+  "version": "1.0.0",
+  "description": "Gemini 3.8 Flash 및 3.7 Flash 기반 정신건강 상담 특화 챗봇",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "gemini",
+    "chatbot",
+    "mental-health",
+    "counseling",
+    "gcp"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}
