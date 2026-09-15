@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+
+# Environment and Secrets
+.env
+.env.*
+*.key
+*.pem
+
+# Deployment and Temporary Logs
+startup-script.sh
+*.log
+deployment.log
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
