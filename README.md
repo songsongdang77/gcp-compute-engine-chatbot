@@ -108,6 +108,52 @@ sudo pm2 save
   - 👉 **`https://136.65.52.77.nip.io`**
 - 브라우저에 **초록색 자물쇠(보안 연결)** 가 표시되며, Chrome의 마이크 음성 인식(STT) 기능도 100% 정상 작동합니다.
 
+---
+
+## 🔒 HTTP vs HTTPS 비교 및 SSL 보안 적용 기술
+
+본 프로젝트는 안전하고 신뢰할 수 있는 심리 상담 환경을 위해 일반 HTTP(80)에서 **정식 HTTPS(443) 보안 환경으로 고도화**되었습니다.
+
+### 1. HTTP와 HTTPS의 핵심 차이점
+
+| 비교 항목 | HTTP (HyperText Transfer Protocol) | HTTPS (HTTP over SSL/TLS) |
+| :--- | :--- | :--- |
+| **기본 포트** | `TCP 80` | `TCP 443` |
+| **데이터 암호화** | ❌ **평문(Plaintext) 전송**<br>(네트워크 스니핑 시 상담 대화가 그대로 노출됨) | ✅ **TLS 1.3 양방향 암호화**<br>(데이터 전송 구간 완벽 암호화 및 무결성 보장) |
+| **브라우저 표시** | ⚠️ `Not secure (주의 요함)` 경고 표시 | 🔒 `보안 연결 (자물쇠 아이콘)` 표시 |
+| **웹 표준 하드웨어 권한** | ❌ **마이크/카메라 접근 차단**<br>(Chrome 보안 정책상 비보안 출처의 마이크 접근 금지) | ✅ **마이크 음성 인식(STT) 정상 허용**<br>(Web Speech API 안전한 컨텍스트 충족) |
+| **데이터 위변조 방지** | 중간자 공격(MITM)에 취약 | 인증서 서명 검증을 통해 패킷 변조 원천 차단 |
+
+---
+
+### 2. HTTPS 전환을 위해 적용된 기술 아키텍처
+
+```mermaid
+flowchart LR
+    Client([사용자 브라우저]) -->|HTTPS 443 암호화 통신| FW[GCP 방화벽 포트 443]
+    FW --> Nginx[Nginx 리버스 프록시<br>Let's Encrypt SSL 종단]
+    Nginx -->|내부 루프백 전달 127.0.0.1:3000| App[Node.js 챗봇 서버]
+    Client -.->|HTTP 80 접속 시| Nginx
+    Nginx -.->|301 Moved Permanently| Client
+```
+
+#### 🌐 1) 동적 와일드카드 DNS (Dynamic Wildcard DNS - `sslip.io` / `nip.io`)
+- **도입 이유**: SSL/TLS 공인 인증서는 숫자 IP(`136.65.52.77`)에 직접 무료 발급되지 않고 공인 도메인 이름(FQDN)을 필요로 합니다.
+- **적용 기술**: 도메인을 별도로 구매하지 않고도 IP를 도메인화해 주는 와일드카드 DNS 기술을 적용하여 `136.65.52.77.sslip.io` 및 `136.65.52.77.nip.io`를 인스턴스 공인 IP로 즉시 해석하도록 구성하였습니다.
+
+#### 🛡️ 2) GCP VPC 방화벽 (Firewall Rule)
+- `gcloud compute firewall-rules update`를 통해 `allow-chatbot-web` 규칙에 `tcp:443`을 추가하여 전 세계 인터넷(`0.0.0.0/0`)의 인바운드 HTTPS 트래픽을 허용하였습니다.
+
+#### ⚡ 3) Nginx 고성능 리버스 프록시 (Reverse Proxy)
+- 외부 포트 80과 443을 Nginx가 전담 수신하고, 내부 Node.js 앱(`127.0.0.1:3000`)으로 안전하게 중계하도록 분리하였습니다.
+- **실시간 SSE 스트리밍 최적화**: Gemini AI의 실시간 답변 타이핑이 지연 없이 흘러나올 수 있도록 `proxy_buffering off;` 및 `proxy_read_timeout 86400s;`를 적용하였습니다.
+
+#### 📜 4) Let's Encrypt & Certbot (자동화된 공인 인증서 체계)
+- 글로벌 비영리 인증 기관인 **Let's Encrypt**로부터 ACME 프로토콜을 이용해 무료 정식 SSL 인증서를 발급받았습니다.
+- `certbot.timer` 시스템 데몬을 활성화하여 90일 주기의 인증서 갱신을 사람의 개입 없이 24/7 자동 갱신하도록 구성하였습니다.
+
+#### 🔄 5) HTTP to HTTPS 강제 리다이렉션 (301 Redirect)
+- 사용자가 실수로 `http://`로 접속하더라도 Nginx 단에서 자동으로 안전한 `https://`로 영구 리다이렉션(`301 Moved Permanently`)되도록 설계하여 보안성을 극대화하였습니다.
 
 ---
 
